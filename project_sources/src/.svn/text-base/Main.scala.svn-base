@@ -1,0 +1,88 @@
+import scala.util._
+import scala.io._
+import scala.collection.mutable.ListMap
+
+object Main {
+	import Parser._;
+  	import Polynomial._
+  	import Utilities._
+  	import ProjectionPhase._
+  	import Univariate._
+  	import BasePhase._
+  	import CAD._
+  	
+  	// Used for equality checks involving values of polynomials in some points
+  	// Roots of polys are found within an error of eps * 10000
+  	def eps = 0.000000000001 : Double
+  
+  	def testFile(f : String) : Unit = {
+		println("Parsing file " + f)
+		parseFile(f)
+  	  
+		println("Analysed polynomials: ")
+		printVector(allPolynomials)		
+		println("vars: " + allVariables)
+	
+/*		
+		println("\nProj 1: " )
+		printVector(proj1(allPolynomials))
+		println("\nProj 2: ")
+		printVector(proj2(allPolynomials))
+		println("\nProj 3: " )
+		printVector(proj3(allPolynomials))
+		println("\nFirst projection : ")		
+		printVector(projection(allPolynomials))
+		
+		//println("\nSecond projection : ")		
+		//printVector(projection(projection(allPolynomials)))
+*/		
+		println("\nUnivariate projection (on real axis) contains these polynomials: ")		
+		printVector(projectionToUnivariatePolys(allPolynomials)._1)
+		println()
+		
+		var cells = CAD.cells(allPolynomials)
+		println("There are " + cells.size + " cells :")		
+		for(c <- cells)
+		  println(c)
+		var result = choose(allPolynomials, desiredSignsOfPolynomials)		  
+		println("====== FINAL RESULT FOR " + f + " ================================")
+		println(result)  	  
+  	}
+  	
+	def main(args : Array[String]) : Unit = {
+		//PolyTest
+  		testFile("in.txt")
+  		println("====================================================")
+//		testFile("test1")
+//		testFile("test2")
+//		testFile("test3")
+//		testFile("test4") // NULL
+//		testFile("test5")
+//		testFile("test4") // NULL; Try commenting the second line!!!
+//		testFile("test7")
+
+		println("====================================================")
+ // 		PolyTest
+		
+		testFile("test8")
+		
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

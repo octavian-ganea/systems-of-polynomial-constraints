@@ -1,0 +1,28 @@
+====================================================
+Parsing file test1
+Parsing succeded. Results:
+List of all variables:
+Vector(x, y)
+List of all polynomials:
+Vector((1.0 y^2 + -1.0 ) + 1.0 x^2, (-1.0 y^2) + 1.0 x^3)
+
+List of desired signs : Vector(>, =)
+Analysed polynomials: 
+(1.0 y^2 + -1.0 ) + 1.0 x^2
+(-1.0 y^2) + 1.0 x^3
+vars: Vector(x, y)
+
+Univariate projection (on real axis) contains these polynomials: 
+1.0 y^2 + -1.0 
+-1.0 y^2
+4.0 y^2 + -4.0 
+27.0 y^4
+-1.0  + -2.0 y^4 + 3.0 y^2 + 1.0 y^6
+1.0  + -1.0 y^2
+-1.0  + 3.0 y^2 + 1.0 y^6 + -3.0 y^4
+1.0 y^4
+
+There are 61 cells
+====== FINAL RESULT FOR test1 ================================
+Map(x -> 1.0, y -> -1.0)
+

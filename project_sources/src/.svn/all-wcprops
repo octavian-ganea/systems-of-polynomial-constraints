@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/cylindrical-algebraic-decomp/!svn/ver/2/trunk/src
+END
+ProjectionPhase.scala
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/cylindrical-algebraic-decomp/!svn/ver/12/trunk/src/ProjectionPhase.scala
+END
+Polynomial.scala
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/cylindrical-algebraic-decomp/!svn/ver/18/trunk/src/Polynomial.scala
+END
+Main.scala
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/cylindrical-algebraic-decomp/!svn/ver/19/trunk/src/Main.scala
+END
+Univariate.scala
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/cylindrical-algebraic-decomp/!svn/ver/18/trunk/src/Univariate.scala
+END
+CAD.scala
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/cylindrical-algebraic-decomp/!svn/ver/18/trunk/src/CAD.scala
+END
+Utilities.scala
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/cylindrical-algebraic-decomp/!svn/ver/6/trunk/src/Utilities.scala
+END
+BasePhase.scala
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/cylindrical-algebraic-decomp/!svn/ver/18/trunk/src/BasePhase.scala
+END
+Parser.scala
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/cylindrical-algebraic-decomp/!svn/ver/18/trunk/src/Parser.scala
+END

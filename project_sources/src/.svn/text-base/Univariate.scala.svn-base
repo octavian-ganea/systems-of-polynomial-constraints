@@ -1,0 +1,208 @@
+import scala.util._
+import scala.io._
+import scala.collection.mutable.ListMap
+
+// File that implements operations on univariate polynomials:
+// 1) Remainder of a polynomial modulo other polynomial (PRS)
+// 2) Vector of PRS of a polynomial that is called generalized Sturm chain (see the PDF "CAD an introduction")
+// 3) Computing the number of sign changes of a polynomial
+// 4) Computing the number of real roots of a polynomial in an interval [a,b] using Descartes sign rule
+// 5) Computing numerically all the real roots of a real univariate polynomial using binary search
+// 6) Infinite for a polynomial - this value is an upper bound for all real roots of the polynomials (used in searching for roots)
+
+object Univariate {
+	import Parser._;
+  	import Polynomial._
+  	import Utilities._
+  	import ProjectionPhase._
+  	import BasePhase._
+ 	
+  	def univariateTest : Unit = {
+		println("Test Univariate:")
+		var v = Vector.empty[String] :+ "x"
+		var p = newpol(" x^5 - 2*x^4 - 3* x^3 - x^2 + 2*x + 3", v)
+		var q = p.derivative
+		println("p = " + p)
+		println("q = " + q)
+		println("remainder p%q is " + remainder(p,q))
+		println("Sturm chain = ")
+		printVector(prsSturmChain(p))
+		
+		println("sign changes for p in -2 = " + numberOfSignChanges(p, -2))
+		println("sign changes for p in 2 = " + numberOfSignChanges(p, 2))
+//		println("infty for p = " + infinity(p))
+//		println("sign changes for p in inf = " + numberOfSignChanges(p, infinity(p)))
+//		println("sign changes for p in -inf = " + numberOfSignChanges(p, -infinity(p)))
+		
+		println("all roots of p = " + allRoots(p))
+		println("Sample points : " + samplePoints(Vector.empty[Pol] :+ p))
+		
+		println()
+		p = newpol(" x^2 - 3*x + 2", v)
+//		println("inf " + infinity(p))
+		println("Sturm chain : " + prsSturmChain(p))		
+		println("sign changes for p in inf = " + numberOfSignChanges(p, infinity(p)))
+		println("sign changes for p in -inf = " + numberOfSignChanges(p, -infinity(p)))
+		println("all roots of p = " + allRoots(p))
+		println("Sample points : " + samplePoints(Vector.empty[Pol] :+ p))
+		println("Cells : " + CAD.cells(Vector.empty[Pol] :+ p))
+		println()
+		p = newpol(" x^2 - 2*x + 1", v)
+		println("Sturm chain : " + prsSturmChain(p))
+//		println("sign changes for p in inf = " + infinity(p) + " is " + numberOfSignChanges(p, infinity(p)) )
+//		println("sign changes for p in -inf = " + (-infinity(p)) + " is " + numberOfSignChanges(p, -infinity(p)))		
+		println("all roots of p = " + allRoots(p))
+		
+		
+		println("End of test Univariate.\n")  	  
+  	}
+  	
+  	def remainder(p : Pol, q : Pol) : Pol = {
+  	  p match {
+  	    case Poly(vp, degp, coefsp) => {
+    	  q match {
+    	    case Poly(vq, degq, coefsq) => {
+    	      if(vp.compareTo(vq) != 0)
+    	        throw new Exception("Remainder error for " + p + " and "  + q)
+    	      var pp = p : Pol
+  	          while(pp.deg >= degq){
+  	            var degree = pp.deg - degq : Int
+  	            var constant = pp.coefs.get(pp.deg).get.value / q.coefs.get(degq).get.value
+  	            var hash = new ListMap[Int, Pol]
+  	            hash.update(degree, new Constant(constant))
+  	            pp = pp - (q* new Poly(vp, degree, hash))
+  	            
+  	            // If after division the new polynomial has the dominant coefficient very close to 0, then we can suppose it is 0
+  	            // TODO: rewrite here
+  	            if(Math.abs(pp.coefs.get(pp.deg).get.value) < 0.000001){
+  	              var coefs2 = pp.coefs
+  	              coefs2.update(pp.deg, new Constant(0))
+  	              pp = simplify(new Poly(vp, pp.deg, coefs2))
+  	            }
+  	          
+  	          }
+  	          return pp
+  	        }
+  	        case _ => throw new Exception("Remainder error for " + p)
+    	  }
+  	    }
+  	    case _ => throw new Exception("Remainder error for " + p)
+  	  }
+  	  null
+  	}
+  	
+
+	def prsSturmChain(p : Pol) : Vector[Pol] = {
+	  var res = Vector.empty[Pol] :+ p
+	  var pp = p
+	  var q = pp.derivative
+
+	  while(q.deg > 0){
+        res = res :+ q	    	    
+        var aux = remainder(pp, q)
+	    pp = q
+	    q = -aux
+	  }
+	  if(q.eequals(q.createZeroPol) == false)
+	    res = res :+ q
+	  res
+	}
+
+	def numberOfSignChanges(p : Pol, a: Double) : Int = {
+	  // Last sign: 1 (represents +) , 2 (represents -)
+	  var lastSign = 0 : Double
+	  var result = 0 : Int
+	  var chain = prsSturmChain(p)
+
+	  for(i <- (0 to chain.size - 1)){
+	    var value = chain(i).subst(a).value
+	    if(value < -Main.eps && lastSign != 2){
+	      if(lastSign != 0)
+	      result = result + 1	      
+	      lastSign = 2
+	    }
+	    if(value > Main.eps && lastSign != 1){
+	      if(lastSign != 0)
+	      result = result + 1	      
+	      lastSign = 1
+	    }
+	  }
+	  result
+	}
+
+
+	// Returns an upper bound for all real roots of p.
+	// That is max(1, \sum_{i = 0:n-1} abs(a_i/a_n)
+	def infinity(p : Pol) : Double = {
+	  var res = 0 : Double
+  	  p match {
+  	    case Poly(vp, degp, coefsp) => {
+  	      for((i, coef) <- coefsp){
+  	        if(i < degp)
+  	          res = res + Math.abs(coef.value)
+  	      }
+  	      res = res / Math.abs(coefsp.get(degp).get.value)
+  	      return res + Math.Pi/2
+  	    }
+  	    case _ => throw new Exception("Infty error for " + p)
+  	  }	
+	  1
+	}
+	
+	
+	def numberOfRootsInInterval(p : Pol, a: Double, b : Double) : Int = {
+	  return numberOfSignChanges(p, a) - numberOfSignChanges(p , b)
+	}
+	
+	//Newthon method for the case of searching for a root in a very small interval
+	def newtonMethod(p : Pol, a: Double, b: Double) : Double = {
+	  var deriv = p.derivative
+	  var x = a /2 + b /2
+	  var y = a
+	  while(Math.abs(x - y) > 0.00001){
+//	    println("blocks in newton's method " + x)
+	    y = x
+	    x = y - p.subst(y).value / deriv.subst(y).value
+	    if(x > 3* b || x < a/3)
+	      return a
+	  }
+	  x
+	}
+	
+	// Search for n roots of p in interval [a,b]
+	def rootsInInterval(p : Pol, a: Double, b: Double, n: Int) : Vector[Double] = {
+	  // There can be a problem here in case p(a) = 0 : numberOfSignChanges may go mad. I did a hack in the infity function	
+	  if(Math.abs(a - b) <= Main.eps * 1000 && n == 1){
+	      var aa = newtonMethod(p, a, b)
+
+	      // Add this lines to convert a number of form .99999 or .000001 to it's round value 
+	      if(Math.abs(Math.round(aa) - aa) < Main.eps * 10000)
+	        aa = Math.round(aa)
+
+          return Vector.empty[Double] :+ aa
+	  }
+	  var mid = a/2 + b/2
+	  var result = Vector.empty[Double]
+	  var newn = numberOfRootsInInterval(p, a, mid)  
+	  if(newn> 0){
+	    result = result ++ rootsInInterval(p, a, mid, newn)
+	  }
+	  if(n - newn > 0){
+	    result = result ++ rootsInInterval(p, mid, b, n- newn)    	    
+	  }	  
+	  result
+	}
+	
+	def allRoots(p : Pol) : Vector[Double] = {
+	  var infity = infinity(p)
+	  var number = numberOfRootsInInterval(p, -infity, infity)
+	  var res = rootsInInterval(p, -infity - 0.72954569268, infity, number)
+	  if(res.size != number){
+	    println("Obtained different nr of roots " + res)
+	  }
+  	  res
+	}
+	
+	
+}
+

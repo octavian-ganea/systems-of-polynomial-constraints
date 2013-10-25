@@ -1,0 +1,80 @@
+import scala.collection.immutable.Vector
+import scala.io._
+import java.util.StringTokenizer
+import scala.collection.immutable.StringOps
+import scala.collection.mutable.ListMap
+
+// First part of the CAD algorithm - projection phase
+object ProjectionPhase {
+	import Polynomial._
+	import Parser._
+	import Utilities._
+	
+	// Projection part 1: coefficients of all polynomials.
+	def proj1(polys : Vector[Pol]) : Vector[Pol] = {
+	  var res = Vector.empty : Vector[Pol]
+	  for(p <- polys){
+	    for((i, c) <- p.coefs)
+	      if(!c.isConstant)
+	        res = res :+ c
+	  }
+	  res
+	}
+	
+	// Projection part 2: psc between each reductum of each polynomial and its derivative.
+	def proj2(polys : Vector[Pol]) : Vector[Pol] = {
+	  var res = Vector.empty : Vector[Pol]
+	  for(fi <- polys){
+	    for((k, c) <- fi.coefs){
+	      for(l <- (0 to k -1)){
+	        var red = fi.reductum(k)
+	        var p = psc(l, red, red.derivative)
+	        if(!p.isConstant)
+	          res = res :+ p
+	      }
+	    }
+	  }
+	  res
+	}	
+	
+	// Projection part 3: psc between reductums of each pair of polynomials.
+	def proj3(polys : Vector[Pol]) : Vector[Pol] = {
+	  var res = Vector.empty : Vector[Pol]
+	  for(i <- (0 to polys.size - 1))
+	  for(j <- (0 to i - 1)){
+  	    var fi = polys(i)
+  	    var fj = polys(j)
+	    for((ki, ci) <- fi.coefs)
+	    for((kj, cj) <- fj.coefs)
+	      if(ki > 0 || kj > 0) {
+            for(m <- (0 to Math.min(ki,kj))){
+	          var redi = fi.reductum(ki)
+	          var redj = fj.reductum(kj)
+	          var p = psc(m, redi, redj)
+	       //   println(redi + " ," + redj + ", m:" + m + ", psc: " + p)
+	          if(!p.isConstant)
+	            res = res :+ p
+	      }
+	    }
+	  }
+	  res	  
+	}
+	
+	// Projection operation
+	def projection(polys : Vector[Pol]) : Vector[Pol] = {
+	  var res = proj1(polys) ++ proj2(polys) ++ proj3(polys)
+	  var result = Vector.empty[Pol]
+	  var aux = null : Pol
+	  for(i <- (0 to res.size - 1)){
+	    aux = res(i)
+	    for(j <- (0 to i - 1))
+	    if(aux != null && res(j).eequals(aux))
+	      aux = null
+	    if(aux != null)
+	      result = result :+ aux
+	  } 
+	  result
+	}
+
+	
+}

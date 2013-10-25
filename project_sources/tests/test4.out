@@ -1,0 +1,31 @@
+====================================================
+Parsing file test4
+Parsing succeded. Results:
+List of all variables:
+Vector(x, y, z)
+List of all polynomials:
+Vector((1.0 y^2 + (1.0 z^2)) + 1.0 x^2)
+
+List of desired signs : Vector(>)
+Analysed polynomials: 
+(1.0 y^2 + (1.0 z^2)) + 1.0 x^2
+vars: Vector(x, y, z)
+
+Univariate projection (on real axis) contains these polynomials: 
+1.0 z^2
+4.0 z^2
+256.0 z^2
+16.0 z^4
+1.0 z^4
+
+There are 7 cells
+Map(x -> 0.0, y -> 0.0, z -> -1.0000000621016214)
+Map(x -> 0.0, y -> -1.0000004965376839, z -> -6.210162151170791E-8)
+Map(x -> -1.0000008660786868, y -> -4.965376838960563E-7, z -> -6.210162151170791E-8)
+Map(x -> -8.660786867984969E-7, y -> -4.965376838960563E-7, z -> -6.210162151170791E-8)
+Map(x -> 0.9999991339213132, y -> -4.965376838960563E-7, z -> -6.210162151170791E-8)
+Map(x -> 0.0, y -> 0.9999995034623161, z -> -6.210162151170791E-8)
+Map(x -> 0.0, y -> 0.0, z -> 0.9999999378983785)
+====== FINAL RESULT FOR test4 ================================
+Map(x -> 0.0, y -> 0.0, z -> -1.0000000621016214)
+
